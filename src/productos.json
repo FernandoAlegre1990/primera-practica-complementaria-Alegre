@@ -22,17 +22,6 @@
     "status": "true"
   },
   {
-    "id": 4,
-    "title": "Product 4",
-    "description": "Description 4",
-    "price": 18,
-    "thumbnail": "thumbnail6.jpg",
-    "code": "CODE4",
-    "stock": 25,
-    "category": "product",
-    "status": "true"
-  },
-  {
     "id": 5,
     "title": "Nuevo Producto 5",
     "description": "Descripción del nuevo producto 5",

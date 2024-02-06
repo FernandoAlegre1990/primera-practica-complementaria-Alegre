@@ -64,11 +64,11 @@ router.post('/:cid/product/:pid', async (req, res) => {
         const cartId = req.params.cid;
         const productId = req.params.pid;
   
-        // Leer el archivo de productos
+
         const productsData = await fs.promises.readFile(filePathProducts, 'utf-8');
         const products = JSON.parse(productsData);
   
-        // Buscar el producto por su ID
+   
         const product = products.find((product) => product.id == productId);
   
         if (!product) {
@@ -76,11 +76,11 @@ router.post('/:cid/product/:pid', async (req, res) => {
             return;
         }
   
-        // Leer el archivo de carritos
+     
         const cartsData = await fs.promises.readFile(filePathCarts, 'utf-8');
         const carts = JSON.parse(cartsData);
   
-        // Buscar el carrito por su ID
+    
         const cartIndex = carts.findIndex((cart) => cart.id == cartId);
   
         if (cartIndex === -1) {
@@ -90,21 +90,21 @@ router.post('/:cid/product/:pid', async (req, res) => {
   
         const cart = carts[cartIndex];
   
-        // Verificar si el producto ya está en el carrito
+     
         const existingProduct = cart.products.find((item) => item.product === productId);
   
         if (existingProduct) {
-            // Si el producto ya está en el carrito, incrementar la cantidad
+        
             existingProduct.quantity++;
         } else {
-            // Si el producto no está en el carrito, agregarlo con cantidad 1
+           
             cart.products.push({
                 product: productId,
                 quantity: 1
             });
         }
   
-        // Guardar los cambios en el archivo de carritos
+      
         await fs.promises.writeFile(filePathCarts, JSON.stringify(carts, null, 2));
   
         res.status(201).json(cart);
@@ -118,14 +118,12 @@ router.delete('/:cid', async (req, res) => {
     try {
         const cartId = req.params.cid;
 
-        // Leer el archivo de carritos
         const cartsData = await fs.promises.readFile(filePathCarts, 'utf-8');
         const carts = JSON.parse(cartsData);
 
         if (cartId) {
-            // Si se proporciona un ID de carrito, eliminar el carrito específico
+          
 
-            // Buscar el carrito por su ID
             const cartIndex = carts.findIndex((cart) => cart.id == cartId);
 
             if (cartIndex === -1) {
@@ -133,15 +131,15 @@ router.delete('/:cid', async (req, res) => {
                 return;
             }
 
-            // Eliminar el carrito específico
+         
             carts.splice(cartIndex, 1);
 
-            // Guardar los cambios en el archivo de carritos
+          
             await fs.promises.writeFile(filePathCarts, JSON.stringify(carts));
 
             res.status(200).json({ message: 'Carrito eliminado satisfactoriamente' });
         } else {
-            // Si no se proporciona un ID de carrito, eliminar todos los carritos
+          
             await fs.promises.writeFile(filePathCarts, '[]');
             res.status(200).json({ message: 'Todos los carritos han sido eliminados' });
         }
