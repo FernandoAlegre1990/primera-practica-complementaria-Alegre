@@ -1,6 +1,6 @@
 import express from 'express'
 import { Server } from 'socket.io'
-import exphbs from 'express-handlebars';
+import handlebars from 'express-handlebars'
 import productsRouter from './routers/products.router.js'
 import cartsRouter from './routers/carts.router.js'
 import viewsRouter from './routers/views.router.js'
@@ -15,8 +15,8 @@ app.use(express.json()); // middleware para parsear el body de las requests a JS
 app.use(express.static('./src/public')); // middleware para servir archivos estáticos
 
 
-// HANDLEBARS
-app.engine('handlebars', exphbs());
+// configuracion del motor de plantillas handlebars
+app.engine('handlebars', handlebars.engine());
 app.set('views', './src/views');
 app.set('view engine', 'handlebars');
 
@@ -31,18 +31,16 @@ try {
         req.io = io;
         next();
     }); // middleware para agregar la instancia de socket.io a la request
+
+    
     
     // Rutas
     app.get('/', (req, res) => res.render('index')); // ruta raíz
-
-    app.get('/realtimeproducts', (req, res) => {
-      res.render('realTimeProducts', { products: [] }); 
-  });
     
-    app.use('/chat', chatRouter); // ruta chat
-    app.use('/products', viewsRouter); // ruta productos
-    app.use('/api/products', productsRouter);
-    app.use('/api/carts', cartsRouter); 
+    app.use('/chat', chatRouter); // ruta para renderizar la vista de chat
+    app.use('/products', viewsRouter); // ruta para renderizar la vista de productos
+    app.use('/api/products', productsRouter); // registra el router de productos en la ruta /api/products
+    app.use('/api/carts', cartsRouter); // registra el router de carritos en la ruta /api/carts
     
     io.on('connection', socket => {
         console.log('Nuevo cliente conectado!')
@@ -82,9 +80,9 @@ try {
         });
 
         socket.on('productList', async (data) => { 
-            io.emit('updatedProducts', data ) 
-        }) 
-    }) 
+            io.emit('updatedProducts', data ) // emite el evento updatedProducts con la lista de productos
+        }) // evento que se ejecuta cuando se actualiza la lista de productos
+    }) // evento que se ejecuta cuando un cliente se conecta
 } catch (error) {
     console.log(error.message)
 }

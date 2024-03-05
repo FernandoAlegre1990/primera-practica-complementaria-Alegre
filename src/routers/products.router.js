@@ -1,6 +1,7 @@
 import { Router } from "express";
 import fs from 'fs';
 import Product from '../dao/models/product.model.js';
+import { paginate } from "mongoose-paginate-v2";
 
 const router = Router();
 
@@ -8,16 +9,40 @@ const filePathProducts = './src/productos.json';
 
 router.get('/', async (req, res) => {
   console.log('¡Solicitud recibida!');
-  const limit = req.query.limit || 0
+  
   try {
-    const products = await Product.find().limit(limit).lean().exec();
-    //const products = JSON.parse(data);
-    if (!limit) {
-      res.status(200).json({ products });
-    } else {
-      const productsLimit = products.slice(0, limit);
-      res.status(200).json({ products: productsLimit });
-    }
+    const limit = req.query.limit || 10
+    const page = req.query.page || 1
+    const filterOptions = {}
+
+    // const products = await Product.find().limit(limit).lean().exec();
+    // //const products = JSON.parse(data);
+    // if (!limit) {
+    //   res.status(200).json({ products });
+    // } else {
+    //   const productsLimit = products.slice(0, limit);
+    //   res.status(200).json({ products: productsLimit });
+    // }
+
+    if (req.query.stock) filterOptions.stock = req.query.stock
+    if (req.query.category) filterOptions.category = req.query.category
+    const paginateOptions = { limit, page }
+    if (req.query.sort === 'asc') paginateOptions.sort = { price: 1 }
+    if (req.query.sort === 'desc') paginateOptions.sort = { price: -1 }
+    const result = await Product.paginate(filterOptions, paginateOptions)
+    res.status(200).json({
+      status: 'success',
+      payload: result.docs,
+      totalPages: result.totalPages,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      page: result.page,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      prevLink: result.hasPrevPage ? `/api/products?limit=${limit}&page=${result.prevPage}` : null,
+      nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}` : null,
+    });
+
   } catch (error) {
     console.log('Error al leer el archivo:', error);
     res.status(500).json({ error: 'Error al leer el archivo' });

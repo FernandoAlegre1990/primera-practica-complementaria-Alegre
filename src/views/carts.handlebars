@@ -1,0 +1,15 @@
+<div>
+    <h3>ID del Carrito: {{cid}}</h3>
+</div>
+
+<div>
+    <h4>Productos agregados al carrito</h4>
+    <ul class="product-list">
+        {{#each products}}
+        <li class="product-item">
+            <span class="product-name">{{this.product.title}}</span> - Cantidad: {{this.quantity}}
+            <button class="btn-remove" data-product-id="{{this.product.id}}">Eliminar</button>
+        </li>
+        {{/each}}
+    </ul>
+</div>
