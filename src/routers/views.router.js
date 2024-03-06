@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
   })
 
   router.get('/carts/:cid', async (req, res) => {
-    // ID del carrito: 64a36d28ae5981f3f6e4488e
+    // ID del carrito: 65e617f6d8786b8bff70b7a7
     try {
       const id = req.params.cid
       const result = await cartModel.findById(id).lean().exec();
